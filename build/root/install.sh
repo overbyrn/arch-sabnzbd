@@ -102,6 +102,10 @@ rm /tmp/permissions_heredoc
 # env vars
 ####
 
+# misc
+# AUR python does not create base python symlink. create to allow python scripts to utilize /usr/bin/env python in shebang
+ln -s /usr/bin/python2 /usr/bin/python
+
 # cleanup
 yes|pacman -Scc
 rm -rf /usr/share/locale/*
