@@ -32,8 +32,8 @@ EXPOSE 8080
 # expose port for https
 EXPOSE 8090
 
-
-ENV LANG en_GB.UTF-8
+# needed for filebot
+ENV LANG en_US.UTF-8
 ENV JAVA_OPTS -Dapplication.dir=/config
 
 # set permissions

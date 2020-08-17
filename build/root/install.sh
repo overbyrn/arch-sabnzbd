@@ -13,30 +13,34 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 unzip /tmp/scripts-master.zip -d /tmp
 
 # move shell scripts to /root
-mv /tmp/scripts-master/shell/arch/docker/*.sh /root/
+mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/ 
+
+# detect image arch
+####
+
+OS_ARCH=$(cat /etc/os-release | grep -P -o -m 1 "(?=^ID\=).*" | grep -P -o -m 1 "[a-z]+$")
+if [[ ! -z "${OS_ARCH}" ]]; then
+	if [[ "${OS_ARCH}" == "arch" ]]; then
+		OS_ARCH="x86-64"
+	else
+		OS_ARCH="aarch64"
+	fi
+	echo "[info] OS_ARCH defined as '${OS_ARCH}'"
+else
+	echo "[warn] Unable to identify OS_ARCH, defaulting to 'x86-64'"
+	OS_ARCH="x86-64"
+fi
 
 # pacman packages
 ####
 
 # define pacman packages
-pacman_packages="git python2 python2-pyopenssl python2-feedparser p7zip jdk8-openjdk mediainfo"
+pacman_packages="git python2 python2-pyopenssl python2-feedparser p7zip python3 jdk8-openjdk mediainfo"
 
 # install compiled packages using pacman
 if [[ ! -z "${pacman_packages}" ]]; then
 	pacman -S --needed $pacman_packages --noconfirm
 fi
-
-# aor packages
-####
-
-# define arch official repo (aor) packages
-aor_packages=""
-
-# call aor script (arch official repo)
-source /root/aor.sh
-
-# aur packages
-####
 
 # define aur packages
 aur_packages="sabnzbd filebot47"
@@ -48,7 +52,7 @@ source /root/aur.sh
 ####
 
 # define comma separated list of paths 
-install_paths="/opt/sabnzbd,/home/nobody"
+install_paths="/usr/lib/sabnzbd,/var/lib/sabnzbd,/home/nobody"
 
 # split comma separated string into list for install paths
 IFS=',' read -ra install_paths_list <<< "${install_paths}"
@@ -104,11 +108,7 @@ rm /tmp/permissions_heredoc
 
 # misc
 # AUR python does not create base python symlink. create to allow python scripts to utilize /usr/bin/env python in shebang
-ln -s /usr/bin/python2 /usr/bin/python
+#ln -s /usr/bin/python2 /usr/bin/python
 
 # cleanup
-yes|pacman -Scc
-rm -rf /usr/share/locale/*
-rm -rf /usr/share/man/*
-rm -rf /usr/share/gtk-doc/*
-rm -rf /tmp/*
+cleanup.sh
