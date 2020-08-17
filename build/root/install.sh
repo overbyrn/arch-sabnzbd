@@ -12,7 +12,7 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 # unzip build scripts
 unzip /tmp/scripts-master.zip -d /tmp
 
-# move shell scripts to /root
+# move shell scripts to /usr/local/bin/
 mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/ 
 
 # detect image arch
@@ -43,10 +43,10 @@ if [[ ! -z "${pacman_packages}" ]]; then
 fi
 
 # define aur packages
-aur_packages="sabnzbd filebot47"
+aur_packages="sabnzbd"
 
 # call aur install script (arch user repo)
-source /root/aur.sh
+source aur.sh
 
 # container perms
 ####
@@ -100,7 +100,7 @@ EOF
 sed -i '/# PERMISSIONS_PLACEHOLDER/{
     s/# PERMISSIONS_PLACEHOLDER//g
     r /tmp/permissions_heredoc
-}' /root/init.sh
+}' /usr/local/bin/init.sh
 rm /tmp/permissions_heredoc
 
 # env vars
